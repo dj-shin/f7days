@@ -3,7 +3,7 @@ import functools
 import logging
 
 
-def verify_action_count(characters, targets):
+def get_action_count(characters, targets):
     logging.info('Targets: {}'.format(targets))
     events = functools.reduce(lambda x, y: x + y, [characters[target].events for target in targets])
 
@@ -47,8 +47,13 @@ def verify_action_count(characters, targets):
     logging.info('\textra:   {:3d}'.format(required_like))
 
     # find minimum actions count
-    plain_patrol_actions = (max(required_like, 0) + 14) // 15
+    aggregated_patrol_actions = (max(required_like, 0) + 14) // 15
+    individual_patrol_actions = (max([100 - 40 - battle_actions - sum([event[2] for event in characters[target].events]) for target in targets]) + 4) // 5
+    logging.info('Aggregated patrol actions: {}'.format(aggregated_patrol_actions))
+    logging.info('Individual patrol actions: {}'.format(individual_patrol_actions))
+    plain_patrol_actions = max(aggregated_patrol_actions, individual_patrol_actions)
     extra_actions = 84 - (battle_actions + event_actions + plain_patrol_actions)
+
     logging.info('Actions: 84 total')
     logging.info('\tbattle: {:2d}'.format(battle_actions))
     logging.info('\tevent:  {:2d}'.format(event_actions))
@@ -57,13 +62,15 @@ def verify_action_count(characters, targets):
 
     assert extra_actions >= 0
 
+    return battle_actions, event_actions, plain_patrol_actions, extra_actions
+
     
 def main():
     logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(funcName)s:%(lineno)d] %(message)s')
 
     characters = load_characters()
     targets = ['달비라', '에뮤사', '라비', '누르', '세이유이']
-    verify_action_count(characters, targets)
+    actions = get_action_count(characters, targets)
 
 
 if __name__ == '__main__':
