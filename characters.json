@@ -42,9 +42,8 @@
     "name": "시로",
     "patrol": [4],
     "events": [
-      [0, "중앙청", 0, []],
-      [0, "자동이벤트", 10, [{"type": "auto", "time_after": 12}]],
-      [30, "중앙청", 10, []],
+      [0, "중앙청", 10, []],
+      [30, "중앙청", 10, [{"type": "delay_after_previous", "delay_type": "day", "value": 1}]],
       [60, "중앙청", 10, [
         {"type": "before_day", "value": 3},
         {"type": "patrol_with", "name": "안"}
